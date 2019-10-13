@@ -29,6 +29,7 @@ SteerPlotter::SteerPlotter()
    bPlotThetaFile = false;
    bLogy = false;
    bZScoreInRatio = false;
+   bScaleToWidth = false;
 
 }
 
@@ -137,7 +138,7 @@ void SteerPlotter::Print(Option_t* opt) const
   }
   cout << (bDrawLegend? "Legend will be plotted everywhere." : "Legend will be plotted on first plot only") << endl;
   cout << (bShapeNorm? "Shape normalization" : "No shape normalization") << endl;
-  cout << (bScaleToWidth? "Scaling to bin width." : "Not scaling to bin widht.") << endl;
+  cout << (bScaleToWidth? "Scaling to bin width." : "Not scaling to bin width.") << endl;
   cout << (bDoCumulative? "Cumulative distributions will be plotted." : "Normal distributions will be plotted") << endl;
   cout << (bSingleEPS? "Creating one eps file per histogram." : "Creating one ps file with all histograms for each histogram collection.") << endl;
   cout << (bIgnoreEmptyBins? "Empty bins will not be plotted in the ratio." : "Empty bins will have infinite error in the ratio.") << endl;
