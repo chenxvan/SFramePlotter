@@ -62,7 +62,7 @@ void FileParser::OpenFile(TString fname, TString cyclename)
   // open the root files with names given in the TObjArray
 
   if (m_file != NULL){
-    cerr << "FileParser::OpenFile: Can not open new file, since file " 
+    cerr << "FileParser::OpenFile: Can not open new file, since file "
 	 << m_file->GetName() << " is still in memory. Abort." << endl;
     exit(EXIT_FAILURE);
   }
@@ -71,7 +71,7 @@ void FileParser::OpenFile(TString fname, TString cyclename)
     TString Prefix(cyclename);
     Prefix.Append(".");
     fname.Prepend(Prefix);
-  }  
+  }
 
   // check if name consists of a wildcard, if so use hadd to combine histograms
   if (fname.Contains("*")){
@@ -83,7 +83,7 @@ void FileParser::OpenFile(TString fname, TString cyclename)
       if (debug) cout << "Target exists, removing file " << target << endl;
       remove(target);
     }
-      
+
     TString command = "hadd " + target + " " + fname;
     int res = gSystem->Exec(command);
     if(res != 0){
@@ -103,7 +103,7 @@ void FileParser::OpenFile(TString fname, TString cyclename)
       if (debug) cout << "Target exists, removing file " << target << endl;
       remove(target);
     }
-      
+
     TString command = "hadd " + target + " " + fname;
     int res = gSystem->Exec(command);
     if(res != 0){
@@ -121,7 +121,7 @@ void FileParser::OpenFile(TString fname, TString cyclename)
     cout << " is open? " << m_file->IsOpen() << endl;
     m_file->ls();
   }
-    
+
   if (!m_file->IsOpen()) {
     cout << endl << "FileParser: File " << fname << " does not exist!!!" << endl;
     exit(EXIT_FAILURE);
@@ -143,14 +143,14 @@ void FileParser::OpenThetaFile(TString cyclename)
   // open the root files with names given in the TObjArray
 
   if (m_file != NULL){
-    cerr << "FileParser::OpenFile: Can not open new file, since file " 
+    cerr << "FileParser::OpenFile: Can not open new file, since file "
 	 << m_file->GetName() << " is still in memory. Abort." << endl;
     exit(EXIT_FAILURE);
   }
   TString fname = "" ;
   if (cyclename.Sizeof()!=0){
     fname = cyclename;
-      }  
+      }
 
   // fname = target;
 
@@ -163,7 +163,7 @@ void FileParser::OpenThetaFile(TString cyclename)
     cout << " is open? " << m_file->IsOpen() << endl;
     m_file->ls();
   }
-    
+
   if (!m_file->IsOpen()) {
     cout << endl << "FileParser: File " << fname << " does not exist!!!" << endl;
     exit(EXIT_FAILURE);
@@ -182,7 +182,7 @@ void FileParser::OpenThetaFile(TString cyclename)
 
 void FileParser::StoreProcessName(TString name)
 {
-  
+
   TObjArray* pieces = name.Tokenize(".");
   for (int i=0; i<pieces->GetEntries(); ++i){
     TString piece = ((TObjString*)pieces->At(i))->GetString();
@@ -197,7 +197,7 @@ void FileParser::StoreProcessName(TString name)
 TObjArray* FileParser::FindSubdirs()
 {
   // find all subdirectories (former histogram collections) in the open file
-  // returns a TObjArray with the names of the subdirectories 
+  // returns a TObjArray with the names of the subdirectories
 
   m_file->cd();
   TObjArray* dirnames = new TObjArray();
@@ -208,7 +208,7 @@ TObjArray* FileParser::FindSubdirs()
   TIter nextkey( gDirectory->GetListOfKeys() );
   while ( (key = (TKey*)nextkey())) {
     TObject *obj = key->ReadObj();
-    if ( obj->IsA()->InheritsFrom( "TDirectory" ) ) {    // found a subdirectory! 
+    if ( obj->IsA()->InheritsFrom( "TDirectory" ) ) {    // found a subdirectory!
       TString dirname(((TDirectory*) obj)->GetName());
       dirnames->Add(new TObjString(dirname));
       if (debug) cout << "Found directory " << dirname << endl;
@@ -261,17 +261,17 @@ void FileParser::BrowseFile()
 	} else {
 	  shist->SetDir(dirname);
 	}
-	if (debug) cout << "Adding hist " << shist->GetHist()->GetName() 
+	if (debug) cout << "Adding hist " << shist->GetHist()->GetName()
 			<< " (process = " << m_process << ")" << endl;
-	m_hists->Add(shist);	
+	m_hists->Add(shist);
       }
-      
+
       delete obj;
 
     }
 
   }
-  
+
   return;
 
 }
@@ -284,13 +284,13 @@ void FileParser::BrowseThetaFile(TString sample)
     cerr << "FileParser::BrowseFile: No file open. Abort." << endl;
     exit(EXIT_FAILURE);
   }
-   
+
   m_file->cd();
   TKey *key;
   TIter nextkey( m_file->GetListOfKeys() );
 
   while ( (key = (TKey*)nextkey())) {
-    
+
     TString histName = key->GetName();
     histName.ReplaceAll("__", "#");
     TObjArray* pieces = histName.Tokenize("#");
@@ -298,7 +298,7 @@ void FileParser::BrowseThetaFile(TString sample)
     if (((TObjString*)pieces->At(1))->GetString() == sample){
 
       TObject *obj = key->ReadObj();
-      
+
       if ( obj->IsA()->InheritsFrom( TH1::Class() ) ) {
 
 	// histogram found
@@ -317,28 +317,28 @@ void FileParser::BrowseThetaFile(TString sample)
 	SetProcessName(proc_name);
 	TString hname = ((TObjString*)pieces->At(0))->GetString();
 	shist->SetName(hname);
-	  
+
 	shist->SetDir("Main");
-	
+
 	if (pieces->GetEntries()>2){
 	  m_shapeSys->Add(shist);
 	  proc_name = ((TObjString*)pieces->At(1))->GetString() + "__" + ((TObjString*)pieces->At(2))->GetString() + "__" + ((TObjString*)pieces->At(3))->GetString();
-	  shist->SetProcessName(proc_name);	  
+	  shist->SetProcessName(proc_name);
 	  SetProcessName(proc_name);
-	  if (debug) cout << "Adding hist to systematic sample: " << shist->GetHist()->GetName() 
+	  if (debug) cout << "Adding hist to systematic sample: " << shist->GetHist()->GetName()
 	  		  << " (process = " << m_process << ")" << endl;
 	} else {
 	  m_hists->Add(shist);
-	  if (debug) cout << "Adding hist " << shist->GetHist()->GetName() 
+	  if (debug) cout << "Adding hist " << shist->GetHist()->GetName()
 			  << " (process = " << m_process << ")" << endl;
 	}
       }
-      
+
       delete obj;
     }
   }
 
-  
+
   return;
 
 }
@@ -360,12 +360,12 @@ void FileParser::MakeCumulativeHist(TH1* hist)
 
 
 TH1* FileParser::Rebin(TH1* hist, TString dirname)
-{						
+{
   TString name(hist->GetName());
   TString title(hist->GetTitle());
   //cout << "name = " << name << " title = " << title << endl;
   if (name.CompareTo("toptags")==0){// && dirname.Contains("cutflow6") && title.Contains("electron")){
-   
+
     Double_t binsx[] = {0, 960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1860, 1920, 1980, 2040, 2100, 2400, 3000};
     name.Append("_rebin_lx");
     TH1* rebinned = hist->Rebin(22, name, binsx);
@@ -373,37 +373,37 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     return rebinned;
 
   } else if (name.BeginsWith("mu_0top0btag_mttbar")) {
-    
+
     TH1* rebinned = hist->Rebin(2);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
 
   } else if (name.BeginsWith("mu_0top1btag_mttbar")) {
-    
+
     TH1* rebinned = hist->Rebin(2);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
 
   } else if (name.BeginsWith("mu_1top_mttbar")) {
-    
+
     TH1* rebinned = hist->Rebin(4);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
 
   } else if (name.BeginsWith("el_0top0btag_mttbar")) {
-    
+
     TH1* rebinned = hist->Rebin(2);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
 
   } else if (name.BeginsWith("el_0top1btag_mttbar")) {
-    
+
     TH1* rebinned = hist->Rebin(2);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
 
   } else if (name.BeginsWith("el_1top_mttbar")) {
-    
+
     TH1* rebinned = hist->Rebin(4);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
@@ -418,13 +418,13 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
 
 void FileParser::SetInfo(TString legname, double weight, int colour, int marker, float unc)
 {
-  
+
   for (int i=0; i<m_hists->GetEntries(); ++i){
     SHist* sh = (SHist*)m_hists->At(i);
     sh->SetLegName(legname);
     sh->SetWeight(weight);
     sh->SetUnc(unc);
-    if (weight>0) sh->GetHist()->Scale(weight);
+    sh->GetHist()->Scale(weight);
     sh->GetHist()->SetMarkerColor(colour);
     sh->GetHist()->SetLineColor(colour);
 
@@ -435,16 +435,16 @@ void FileParser::SetInfo(TString legname, double weight, int colour, int marker,
       sh->SetDrawMarker(false);
       sh->GetHist()->SetMarkerStyle(0);
       sh->GetHist()->SetMarkerSize(0);
-      sh->GetHist()->SetLineWidth(2);   
+      sh->GetHist()->SetLineWidth(2);
     }
 
-    // histogram is transparent if marker < 0  
+    // histogram is transparent if marker < 0
     if (marker < 0 ){
       // change line style
       if (marker==-1) sh->GetHist()->SetLineStyle(kDashed);
       if (marker==-2) sh->GetHist()->SetLineStyle(kDotted);
       if (marker==-3) sh->GetHist()->SetLineStyle(kDashDotted);
-      if (marker==-4) sh->GetHist()->SetLineStyle(kDashDotted);    
+      if (marker==-4) sh->GetHist()->SetLineStyle(kDashDotted);
     }
   }
 }
