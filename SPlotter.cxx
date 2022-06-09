@@ -45,6 +45,7 @@ SPlotter::SPlotter()
   bDrawLumi    = true;
   bForPrelim   = false;
   bForPublication = false;
+  bForThesis = false;
   bDrawLegend  = true;
   bPlotRatio   = false;
   bZScoreInRatio = false;
@@ -134,11 +135,11 @@ void SPlotter::StackHists(std::vector<TObjArray*>& hists, int index, bool rename
     TString histname = hist->GetHist()->GetName();
     if (!stackname.Contains(histname)){
       cerr << "SPlotter::StackHists: incompatible histograms at position " << i 
-	   << ", stackname = " << stackname << " histname = " << histname 
-	   << ". Prefer to exit because of consistency." << endl;
+    	   << ", stackname = " << stackname << " histname = " << histname 
+    	   << ". Prefer to exit because of consistency." << endl;
       exit(EXIT_FAILURE);
     }
-    // still here? do the stackin'!
+    //    still here? do the stackin'!
     hist->GetHist()->SetFillColor(hist->GetHist()->GetLineColor());
     hist->GetHist()->SetFillStyle(1001);
     if (rename){
@@ -1391,7 +1392,7 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
 
 void SPlotter::DrawLumi()
 {
-  TString infotext = TString::Format("%3.1f fb^{-1} (8 TeV)", m_lumi);
+  TString infotext = TString::Format("%3.1f fb^{-1} (13 TeV)", m_lumi);
   TLatex *text1 = new TLatex(3.5, 24, infotext);
   text1->SetNDC();
   text1->SetTextAlign(33);
@@ -1406,7 +1407,7 @@ void SPlotter::DrawLumi()
   }
   text1->Draw();
 
-  if (bForPublication || bForPrelim){
+  if (bForPublication || bForPrelim ||bForThesis){
     TString cmstext = "CMS";
     TLatex *text2 = new TLatex(3.5, 24, cmstext);
     text2->SetNDC();
@@ -1439,7 +1440,22 @@ void SPlotter::DrawLumi()
     }
     text3->Draw();
   }
-  
+  if (bForThesis){
+    TString preltext = "Work in progress";
+    TLatex *text3 = new TLatex(3.5, 24, preltext);
+    text3->SetNDC();
+    text3->SetTextAlign(13);
+    text3->SetX(0.24);
+    text3->SetTextFont(52);
+    if (bPlotRatio){
+      text3->SetTextSize(0.06);
+      text3->SetY(0.78);
+    } else {
+      text3->SetTextSize(0.035);
+      text3->SetY(0.78);
+    }
+    text3->Draw();
+  }
 }
 
 void SPlotter::DoCosmetics(vector<SHist*> hists)

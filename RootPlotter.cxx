@@ -957,7 +957,7 @@ void RootPlotter::PlotHistos(const char* psfilename)
 	  text1->SetTextSizePixels(24);
 	  text1->Draw();
 	  
-	  TLatex *text2 = new TLatex(3.570061,23.08044,"5.2 fb^{-1} at #sqrt{s} = 8 TeV");
+	  TLatex *text2 = new TLatex(3.570061,23.08044,"5.2 fb^{-1} at #sqrt{s} = 13 TeV");
 	  text2->SetNDC();
 	  text2->SetTextAlign(13);
 	  text2->SetX(0.22);

@@ -69,6 +69,7 @@ void FileParser::OpenFile(TString fname, TString cyclename)
 
   if (cyclename.Sizeof()!=0){
     TString Prefix(cyclename);
+    //Prefix.Append("");
     Prefix.Append(".");
     fname.Prepend(Prefix);
   }  
